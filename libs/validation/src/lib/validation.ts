@@ -10,3 +10,18 @@ export const loginValidation = {
     nest: [],
   },
 };
+
+export const registerValidation = {
+  name: {
+    angular: [Validators.required, Validators.minLength(1)],
+    nest: [],
+  },
+  email: {
+    angular: [Validators.required, Validators.email],
+    nest: [],
+  },
+  password: {
+    angular: [Validators.required, Validators.minLength(6)],
+    nest: [],
+  },
+};

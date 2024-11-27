@@ -1,1 +1,59 @@
-<p>register works!</p>
+<div class="register-page">
+  <mat-card class="register-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Register</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="formGroup">
+        <mat-form-field appearance="outline">
+          <mat-label>Enter your name</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="name"
+            (blur)="updateNameErrorMessage()"
+            required
+          />
+          @if (name.invalid) {
+          <mat-error>{{ nameErrorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Enter your email</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            (blur)="updateEmailErrorMessage()"
+            required
+          />
+          @if (email.invalid) {
+          <mat-error>{{ emailErrorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Enter your password</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            (blur)="updatePasswordErrorMessage()"
+            required
+          />
+          @if (password.invalid) {
+          <mat-error>{{ passwordErrorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+      </form>
+
+      <button mat-raised-button (click)="register()">Register</button>
+    </mat-card-content>
+
+    <mat-card-footer class="register-card-footer">
+      <a routerLink="/login"> Login </a>
+    </mat-card-footer>
+  </mat-card>
+</div>
