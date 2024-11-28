@@ -26,10 +26,12 @@ export class AuthEffects {
         ofType(login),
         delay(2000),
         switchMap((action) =>
-          this.authService.login(action.email, action.password).pipe(
-            map((token: string) => loginSuccess({ token })),
-            catchError((error) => [loginFailure({ error: error.message })])
-          )
+          this.authService
+            .login({ email: action.email, password: action.password })
+            .pipe(
+              map((token: string) => loginSuccess({ token })),
+              catchError((error) => [loginFailure({ error: error.message })])
+            )
         )
       ),
     { functional: true }
@@ -63,7 +65,11 @@ export class AuthEffects {
         ofType(register),
         switchMap((action) =>
           this.authService
-            .register(action.name, action.email, action.password)
+            .register({
+              name: action.name,
+              email: action.email,
+              password: action.password,
+            })
             .pipe(
               map((token: string) => registerSuccess({ token })),
               catchError((error) => [registerFailure({ error: error.message })])

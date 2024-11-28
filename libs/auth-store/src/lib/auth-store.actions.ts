@@ -1,3 +1,4 @@
+import { LoginDto, RegisterDto } from '@nest-angular-monorepo/types';
 import { createAction, props } from '@ngrx/store';
 
 export const AuthActions = {
@@ -12,10 +13,7 @@ export const AuthActions = {
   AUTH_REGISTER_FAILURE: '[Auth] Register Failure',
 };
 
-export const login = createAction(
-  AuthActions.AUTH_LOGIN,
-  props<{ email: string; password: string }>()
-);
+export const login = createAction(AuthActions.AUTH_LOGIN, props<LoginDto>());
 
 export const loginSuccess = createAction(
   AuthActions.AUTH_LOGIN_SUCCESS,
@@ -31,7 +29,7 @@ export const logout = createAction(AuthActions.AUTH_LOGOUT);
 
 export const register = createAction(
   AuthActions.AUTH_REGISTER,
-  props<{ name: string; email: string; password: string }>()
+  props<RegisterDto>()
 );
 
 export const registerSuccess = createAction(

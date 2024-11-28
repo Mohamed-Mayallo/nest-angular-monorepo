@@ -17,6 +17,7 @@
     "paths": {
       "@nest-angular-monorepo/auth-store": ["libs/auth-store/src/index.ts"],
       "@nest-angular-monorepo/material": ["libs/material/src/index.ts"],
+      "@nest-angular-monorepo/types": ["libs/types/src/index.ts"],
       "@nest-angular-monorepo/validation": ["libs/validation/src/index.ts"]
     }
   },
