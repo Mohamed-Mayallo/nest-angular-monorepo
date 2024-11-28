@@ -1,11 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '@nest-angular-monorepo/material';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { merge } from 'rxjs';
 import { loginValidation } from '@nest-angular-monorepo/validation';
+import { login, selectAuthLoading } from '@nest-angular-monorepo/auth-store';
 
 @Component({
   selector: 'app-login',
@@ -14,19 +16,20 @@ import { loginValidation } from '@nest-angular-monorepo/validation';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
-  readonly email = new FormControl('', loginValidation.email.angular);
-  readonly password = new FormControl('', loginValidation.password.angular);
+export class LoginComponent implements OnInit {
+  email = new FormControl('', loginValidation.email.angular);
+  password = new FormControl('', loginValidation.password.angular);
 
-  readonly formGroup = new FormGroup({
+  formGroup = new FormGroup({
     email: this.email,
     password: this.password,
   });
 
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
+  isLoading = signal(false);
 
-  constructor() {
+  constructor(private store: Store) {
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updateEmailErrorMessage());
@@ -34,6 +37,12 @@ export class LoginComponent {
     merge(this.password.statusChanges, this.password.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updatePasswordErrorMessage());
+  }
+
+  ngOnInit() {
+    this.store.select(selectAuthLoading).subscribe((isLoading) => {
+      this.isLoading.set(isLoading || false);
+    });
   }
 
   updateEmailErrorMessage() {
@@ -57,8 +66,11 @@ export class LoginComponent {
   }
 
   login() {
-    console.log(this.formGroup.value);
-
     if (this.formGroup.invalid) return;
+
+    const email = this.formGroup.get('email')!.value as string;
+    const password = this.formGroup.get('password')!.value as string;
+
+    this.store.dispatch(login({ email, password }));
   }
 }

@@ -6,6 +6,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { registerValidation } from '@nest-angular-monorepo/validation';
 import { MaterialModule } from '@nest-angular-monorepo/material';
 import { merge } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { register, selectAuthLoading } from '@nest-angular-monorepo/auth-store';
 
 @Component({
   selector: 'app-register',
@@ -15,11 +17,11 @@ import { merge } from 'rxjs';
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
-  readonly name = new FormControl('', registerValidation.name.angular);
-  readonly email = new FormControl('', registerValidation.email.angular);
-  readonly password = new FormControl('', registerValidation.password.angular);
+  name = new FormControl('', registerValidation.name.angular);
+  email = new FormControl('', registerValidation.email.angular);
+  password = new FormControl('', registerValidation.password.angular);
 
-  readonly formGroup = new FormGroup({
+  formGroup = new FormGroup({
     name: this.name,
     email: this.email,
     password: this.password,
@@ -28,8 +30,9 @@ export class RegisterComponent {
   nameErrorMessage = signal('');
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
+  isLoading = signal(false);
 
-  constructor() {
+  constructor(private store: Store) {
     merge(this.name.statusChanges, this.name.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updateNameErrorMessage());
@@ -41,6 +44,12 @@ export class RegisterComponent {
     merge(this.password.statusChanges, this.password.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updatePasswordErrorMessage());
+  }
+
+  ngOnInit() {
+    this.store.select(selectAuthLoading).subscribe((isLoading) => {
+      this.isLoading.set(isLoading || false);
+    });
   }
 
   updateNameErrorMessage() {
@@ -74,8 +83,12 @@ export class RegisterComponent {
   }
 
   register() {
-    console.log(this.formGroup.value);
-
     if (this.formGroup.invalid) return;
+
+    const name = this.formGroup.get('name')!.value as string;
+    const email = this.formGroup.get('email')!.value as string;
+    const password = this.formGroup.get('password')!.value as string;
+
+    this.store.dispatch(register({ name, email, password }));
   }
 }

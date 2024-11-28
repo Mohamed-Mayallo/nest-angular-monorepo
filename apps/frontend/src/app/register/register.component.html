@@ -49,7 +49,9 @@
         </mat-form-field>
       </form>
 
-      <button mat-raised-button (click)="register()">Register</button>
+      <button mat-raised-button [disabled]="isLoading()" (click)="register()">
+        Register
+      </button>
     </mat-card-content>
 
     <mat-card-footer class="register-card-footer">
