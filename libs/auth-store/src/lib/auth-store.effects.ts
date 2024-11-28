@@ -30,7 +30,9 @@ export class AuthEffects {
             .login({ email: action.email, password: action.password })
             .pipe(
               map((token: string) => loginSuccess({ token })),
-              catchError((error) => [loginFailure({ error: error.message })])
+              catchError((error) => [
+                loginFailure({ error: error.error?.message || error.message }),
+              ])
             )
         )
       ),
@@ -42,7 +44,9 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(loginSuccess),
         map(() => {
-          this.snackBar.open('Login Successful!', 'Close');
+          this.snackBar.open('Login Successful!', 'Close', {
+            duration: 2000,
+          });
         })
       ),
     { dispatch: false, functional: true }
@@ -53,7 +57,9 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(loginFailure),
         map((action) => {
-          this.snackBar.open(action.error, 'Close');
+          this.snackBar.open(action.error, 'Close', {
+            duration: 2000,
+          });
         })
       ),
     { dispatch: false, functional: true }
@@ -72,7 +78,11 @@ export class AuthEffects {
             })
             .pipe(
               map((token: string) => registerSuccess({ token })),
-              catchError((error) => [registerFailure({ error: error.message })])
+              catchError((error) => [
+                registerFailure({
+                  error: error.error?.message || error.message,
+                }),
+              ])
             )
         )
       ),
@@ -84,7 +94,9 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(registerSuccess),
         map(() => {
-          this.snackBar.open('Register Successful!', 'Close');
+          this.snackBar.open('Register Successful!', 'Close', {
+            duration: 2000,
+          });
         })
       ),
     { dispatch: false, functional: true }
@@ -95,7 +107,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(registerFailure),
         map((action) => {
-          this.snackBar.open(action.error, 'Close');
+          this.snackBar.open(action.error, 'Close', { duration: 2000 });
         })
       ),
     { dispatch: false, functional: true }

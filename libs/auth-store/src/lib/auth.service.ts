@@ -7,17 +7,19 @@ import { LoginDto, RegisterDto } from '@nest-angular-monorepo/types';
   providedIn: 'root',
 })
 export class AuthService {
+  private _baseAuthUrl = 'http://localhost:3000/api/auth';
+
   constructor(private http: HttpClient) {}
 
   login(input: LoginDto): Observable<string> {
     return this.http
-      .post<{ token: string }>('/api/auth/login', input)
+      .post<{ token: string }>(`${this._baseAuthUrl}/login`, input)
       .pipe(map((response) => response.token));
   }
 
   register(input: RegisterDto): Observable<string> {
     return this.http
-      .post<{ token: string }>('/api/auth/register', input)
+      .post<{ token: string }>(`${this._baseAuthUrl}/register`, input)
       .pipe(map((response) => response.token));
   }
 }

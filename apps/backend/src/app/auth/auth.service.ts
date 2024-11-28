@@ -1,0 +1,61 @@
+import * as argon from 'argon2';
+import { Model } from 'mongoose';
+import { LoginDto, RegisterDto, User } from '@nest-angular-monorepo/types';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
+@Injectable()
+export class AuthService {
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+
+  public async login(input: LoginDto): Promise<User> {
+    const user = await this.getUserByEmailOrThrow(input.email);
+
+    await this.passwordMustBeMatched(user.password, input.password);
+
+    return user;
+  }
+
+  public async register(input: RegisterDto): Promise<User> {
+    await this.userMustNotBeDuplicated(input.email);
+
+    const user = await this.userModel.create({
+      name: input.name,
+      email: input.email.toLowerCase(),
+      password: await this.hasPass(input.password),
+    });
+
+    return user;
+  }
+
+  private async userMustNotBeDuplicated(email: string) {
+    const user = await this.getUserByEmail(email);
+    if (user) {
+      throw new ConflictException('User already exists!');
+    }
+  }
+
+  private async getUserByEmail(email: string) {
+    const user = await this.userModel.findOne({ email: email.toLowerCase() });
+    return user;
+  }
+
+  private async getUserByEmailOrThrow(email: string) {
+    const user = await this.getUserByEmail(email);
+    if (!user) {
+      throw new ConflictException('User does not exist!');
+    }
+    return user;
+  }
+
+  private async passwordMustBeMatched(hash: string, password: string) {
+    const isPassMatched = await argon.verify(hash, password);
+    if (!isPassMatched) {
+      throw new ConflictException('Password is wrong!');
+    }
+  }
+
+  private async hasPass(password: string) {
+    return await argon.hash(password);
+  }
+}
