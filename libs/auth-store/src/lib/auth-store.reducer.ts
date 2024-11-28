@@ -8,16 +8,19 @@ import {
   registerSuccess,
   registerFailure,
 } from './auth-store.actions';
+import { User } from '@nest-angular-monorepo/types';
 
 export interface AuthState {
   token?: string | null;
   error?: string | null;
+  user?: User | null;
   isLoading?: boolean;
 }
 
 export const initialAuthState: AuthState = {
   token: null,
   error: null,
+  user: null,
   isLoading: false,
 };
 
@@ -25,9 +28,10 @@ export const authReducer = createReducer(
   initialAuthState,
 
   on(login, (state) => ({ ...state, isLoading: true, error: null })),
-  on(loginSuccess, (state, { token }) => ({
+  on(loginSuccess, (state, { token, user }) => ({
     ...state,
     token,
+    user,
     error: null,
     isLoading: false,
   })),
@@ -38,9 +42,10 @@ export const authReducer = createReducer(
   })),
 
   on(register, (state) => ({ ...state, isLoading: true, error: null })),
-  on(registerSuccess, (state, { token }) => ({
+  on(registerSuccess, (state, { token, user }) => ({
     ...state,
     token,
+    user,
     error: null,
     isLoading: false,
   })),
@@ -54,6 +59,7 @@ export const authReducer = createReducer(
     ...state,
     token: null,
     error: null,
+    user: null,
     isLoading: false,
   }))
 );

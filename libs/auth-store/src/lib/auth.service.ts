@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { LoginDto, RegisterDto } from '@nest-angular-monorepo/types';
+import { LoginDto, RegisterDto, User } from '@nest-angular-monorepo/types';
 
 @Injectable({
   providedIn: 'root',
@@ -11,15 +11,15 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(input: LoginDto): Observable<string> {
+  login(input: LoginDto): Observable<User> {
     return this.http
-      .post<{ token: string }>(`${this._baseAuthUrl}/login`, input)
-      .pipe(map((response) => response.token));
+      .post<User>(`${this._baseAuthUrl}/login`, input)
+      .pipe(map((user) => user));
   }
 
-  register(input: RegisterDto): Observable<string> {
+  register(input: RegisterDto): Observable<User> {
     return this.http
-      .post<{ token: string }>(`${this._baseAuthUrl}/register`, input)
-      .pipe(map((response) => response.token));
+      .post<User>(`${this._baseAuthUrl}/register`, input)
+      .pipe(map((user) => user));
   }
 }

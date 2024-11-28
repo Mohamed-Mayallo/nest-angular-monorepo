@@ -3,29 +3,38 @@ import { Model } from 'mongoose';
 import { LoginDto, RegisterDto, User } from '@nest-angular-monorepo/types';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    private jwtService: JwtService,
+    @InjectModel(User.name) private userModel: Model<User>
+  ) {}
 
   public async login(input: LoginDto): Promise<User> {
     const user = await this.getUserByEmailOrThrow(input.email);
 
     await this.passwordMustBeMatched(user.password, input.password);
 
-    return user;
+    const userDoc = user.toJSON();
+    delete userDoc.password;
+
+    return { ...userDoc, token: await this.generateJwtToken(user) };
   }
 
   public async register(input: RegisterDto): Promise<User> {
     await this.userMustNotBeDuplicated(input.email);
 
     const user = await this.userModel.create({
-      name: input.name,
-      email: input.email.toLowerCase(),
-      password: await this.hasPass(input.password),
-    });
+        name: input.name,
+        email: input.email.toLowerCase(),
+        password: await this.hasPass(input.password),
+      }),
+      userDoc = user.toJSON();
+    delete userDoc.password;
 
-    return user;
+    return { ...userDoc, token: await this.generateJwtToken(user) };
   }
 
   private async userMustNotBeDuplicated(email: string) {
@@ -57,5 +66,10 @@ export class AuthService {
 
   private async hasPass(password: string) {
     return await argon.hash(password);
+  }
+
+  private async generateJwtToken(user: User) {
+    const token = await this.jwtService.signAsync({ id: user._id });
+    return `Bearer ${token}`;
   }
 }
