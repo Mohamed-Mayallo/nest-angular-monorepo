@@ -1,3 +1,4 @@
+import { jwtDecode } from 'jwt-decode';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuthState } from './auth-store.reducer';
 
@@ -16,4 +17,13 @@ export const selectAuthLoading = createSelector(
 export const selectAuthenticatedUser = createSelector(
   selectAuthState,
   (state: AuthState) => state.user
+);
+
+export const selectExpirationTime = createSelector(
+  selectAuthState,
+  (state: AuthState) => {
+    if (!state.token) return;
+
+    return (jwtDecode(state.token)?.exp || 1) * 1000;
+  }
 );

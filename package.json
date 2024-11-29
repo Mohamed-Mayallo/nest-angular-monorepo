@@ -27,6 +27,7 @@
     "@ngrx/store": "^18.0.2",
     "argon2": "^0.41.1",
     "axios": "^1.6.0",
+    "jwt-decode": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
     "zod": "^3.23.8",

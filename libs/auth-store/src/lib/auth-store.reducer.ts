@@ -55,11 +55,16 @@ export const authReducer = createReducer(
     isLoading: false,
   })),
 
-  on(logout, (state) => ({
-    ...state,
-    token: null,
-    error: null,
-    user: null,
-    isLoading: false,
-  }))
+  on(logout, (state) => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
+
+    return {
+      ...state,
+      token: null,
+      error: null,
+      user: null,
+      isLoading: false,
+    };
+  })
 );

@@ -1,10 +1,5 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiConflictResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, User } from '@nest-angular-monorepo/types';
 
@@ -18,16 +13,6 @@ export class AuthController {
   public register(@Body() body: RegisterDto): Promise<User> {
     return this.authService.register(body);
   }
-
-  // @Get('/me')
-  // @UseGuards(AuthGuard)
-  // @ValidateUser()
-  // @ApiOperation({ summary: 'Get current user details from token' })
-  // @ApiRes(User)
-  // @ApiBearerAuth('authorization')
-  // public me(@CurrentUser() user: User): Promise<User> {
-  //   return this.meService.me(user);
-  // }
 
   @Post('/login')
   @ApiOperation({ summary: 'Login operation' })

@@ -22,7 +22,7 @@ export const getPostsSuccess = createAction(
 
 export const getPostsFailure = createAction(
   PostsActions.GET_POSTS_FAILURE,
-  props<{ error: string }>()
+  props<{ error: string; statusCode?: number }>()
 );
 
 export const createPost = createAction(
@@ -37,7 +37,7 @@ export const createPostSuccess = createAction(
 
 export const createPostFailure = createAction(
   PostsActions.CREATE_POST_FAILURE,
-  props<{ error: string }>()
+  props<{ error: string; statusCode?: number }>()
 );
 
 export const emptyPosts = createAction(PostsActions.EMPTY_POSTS);

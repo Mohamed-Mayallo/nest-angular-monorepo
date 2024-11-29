@@ -11,13 +11,15 @@ export const AuthActions = {
   AUTH_REGISTER: '[Auth] Register',
   AUTH_REGISTER_SUCCESS: '[Auth] Register Success',
   AUTH_REGISTER_FAILURE: '[Auth] Register Failure',
+
+  AUTH_TRACK_TOKEN_EXP: '[Auth] Track Token Expiration',
 };
 
 export const login = createAction(AuthActions.AUTH_LOGIN, props<LoginDto>());
 
 export const loginSuccess = createAction(
   AuthActions.AUTH_LOGIN_SUCCESS,
-  props<{ token: string; user: User }>()
+  props<{ token: string; user: User; isLoginAction?: boolean }>()
 );
 
 export const loginFailure = createAction(
@@ -40,4 +42,9 @@ export const registerSuccess = createAction(
 export const registerFailure = createAction(
   AuthActions.AUTH_REGISTER_FAILURE,
   props<{ error: string }>()
+);
+
+export const trackTokenExpiration = createAction(
+  AuthActions.AUTH_TRACK_TOKEN_EXP,
+  props<{ token: string }>()
 );

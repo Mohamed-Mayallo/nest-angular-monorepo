@@ -10,10 +10,14 @@ import {
   registerFailure,
   register,
   logout,
+  trackTokenExpiration,
 } from './auth-store.actions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '@nest-angular-monorepo/types';
 import { Router } from '@angular/router';
+import { EMPTY, Observable, of, timer } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectExpirationTime } from './auth-store.selectors';
 
 @Injectable()
 export class AuthEffects {
@@ -21,26 +25,34 @@ export class AuthEffects {
     private actions$: Actions,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {}
 
   login$ = createEffect(
-    () =>
-      this.actions$.pipe(
+    () => {
+      return this.actions$.pipe(
         ofType(login),
         switchMap((action) =>
           this.authService
             .login({ email: action.email, password: action.password })
             .pipe(
               map((user: User) =>
-                loginSuccess({ token: user.token as string, user })
+                loginSuccess({
+                  token: user.token as string,
+                  user,
+                  isLoginAction: true,
+                })
               ),
-              catchError((error) => [
-                loginFailure({ error: error.error?.message || error.message }),
-              ])
+              catchError((error) =>
+                of(
+                  loginFailure({ error: error.error?.message || error.message })
+                )
+              )
             )
         )
-      ),
+      );
+    },
     { functional: true }
   );
 
@@ -48,11 +60,21 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(loginSuccess),
-        map(() => {
-          this.snackBar.open('Login Successful!', 'Close', {
-            duration: 2000,
-          });
-          this.router.navigateByUrl('/posts');
+        map((action) => {
+          if (action.isLoginAction) {
+            this.snackBar.open('Login Successful!', 'Close', {
+              duration: 2000,
+            });
+          }
+
+          localStorage.setItem('authToken', action.token);
+          localStorage.setItem('authUser', JSON.stringify(action.user));
+
+          this.store.dispatch(trackTokenExpiration({ token: action.token }));
+
+          if (action.isLoginAction) {
+            this.router.navigateByUrl('/posts');
+          }
         })
       ),
     { dispatch: false, functional: true }
@@ -84,13 +106,18 @@ export class AuthEffects {
             })
             .pipe(
               map((user: User) =>
-                registerSuccess({ token: user.token as string, user })
+                registerSuccess({
+                  token: user.token as string,
+                  user,
+                })
               ),
-              catchError((error) => [
-                registerFailure({
-                  error: error.error?.message || error.message,
-                }),
-              ])
+              catchError((error) =>
+                of(
+                  registerFailure({
+                    error: error.error?.message || error.message,
+                  })
+                )
+              )
             )
         )
       ),
@@ -101,10 +128,16 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(registerSuccess),
-        map(() => {
+        map((action) => {
           this.snackBar.open('Register Successful!', 'Close', {
             duration: 2000,
           });
+
+          localStorage.setItem('authToken', action.token);
+          localStorage.setItem('authUser', JSON.stringify(action.user));
+
+          this.store.dispatch(trackTokenExpiration({ token: action.token }));
+
           this.router.navigateByUrl('/posts');
         })
       ),
@@ -128,6 +161,37 @@ export class AuthEffects {
         ofType(logout),
         map(() => {
           this.router.navigateByUrl('/login');
+        })
+      ),
+    { dispatch: false, functional: true }
+  );
+
+  trackTokenExpiration$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(trackTokenExpiration),
+        switchMap(() => {
+          // Check every minute
+          return timer(0, 60000).pipe(
+            switchMap(
+              () =>
+                this.store.select(selectExpirationTime) as Observable<number>
+            ),
+            map((expirationTime: number) => {
+              const isTokenExpired =
+                expirationTime && Date.now() > expirationTime;
+
+              if (isTokenExpired) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('authUser');
+
+                return logout();
+              }
+
+              return EMPTY;
+            }),
+            catchError(() => of(logout()))
+          );
         })
       ),
     { dispatch: false, functional: true }

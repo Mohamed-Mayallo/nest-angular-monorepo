@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Post } from '@nest-angular-monorepo/types';
+import { logout } from '@nest-angular-monorepo/auth-store';
+import { Store } from '@ngrx/store';
 import {
   createPost,
   createPostFailure,
@@ -18,7 +21,8 @@ export class PostsEffects {
   constructor(
     private actions$: Actions,
     private postsService: PostsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private store: Store
   ) {}
 
   getPosts$ = createEffect(
@@ -28,11 +32,14 @@ export class PostsEffects {
         switchMap(() =>
           this.postsService.getPosts().pipe(
             map((posts: Post[]) => getPostsSuccess({ posts })),
-            catchError((error) => [
-              getPostsFailure({
-                error: error.error?.message || error.message,
-              }),
-            ])
+            catchError((error) =>
+              of(
+                getPostsFailure({
+                  error: error.error?.message || error.message,
+                  statusCode: error.status,
+                })
+              )
+            )
           )
         )
       ),
@@ -44,6 +51,10 @@ export class PostsEffects {
       this.actions$.pipe(
         ofType(getPostsFailure),
         map((action) => {
+          if (action.statusCode === 401) {
+            this.store.dispatch(logout());
+          }
+
           this.snackBar.open(action.error, 'Close', { duration: 2000 });
         })
       ),
@@ -51,22 +62,26 @@ export class PostsEffects {
   );
 
   createPost$ = createEffect(
-    () =>
-      this.actions$.pipe(
+    () => {
+      return this.actions$.pipe(
         ofType(createPost),
         switchMap((action) =>
           this.postsService
             .createPost({ title: action.title, content: action.content })
             .pipe(
               map((post: Post) => createPostSuccess(post)),
-              catchError((error) => [
-                createPostFailure({
-                  error: error.error?.message || error.message,
-                }),
-              ])
+              catchError((error) =>
+                of(
+                  createPostFailure({
+                    error: error.error?.message || error.message,
+                    statusCode: error.status,
+                  })
+                )
+              )
             )
         )
-      ),
+      );
+    },
     { functional: true }
   );
 
@@ -88,6 +103,10 @@ export class PostsEffects {
       this.actions$.pipe(
         ofType(createPostFailure),
         map((action) => {
+          if (action.statusCode === 401) {
+            this.store.dispatch(logout());
+          }
+
           this.snackBar.open(action.error, 'Close', { duration: 2000 });
         })
       ),
