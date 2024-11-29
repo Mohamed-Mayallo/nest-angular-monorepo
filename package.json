@@ -21,7 +21,6 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.1.0",
     "@nestjs/platform-express": "^10.0.2",
-    "@nestjs/swagger": "^8.0.7",
     "@nestjs/throttler": "^6.2.1",
     "@ngrx/effects": "^18.0.2",
     "@ngrx/store": "^18.0.2",
