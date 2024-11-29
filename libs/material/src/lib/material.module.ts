@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSelectModule,
     MatFormFieldModule,
     MatTooltipModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
   ],
@@ -46,6 +48,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSelectModule,
     MatFormFieldModule,
     MatTooltipModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
   ],

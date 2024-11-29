@@ -1,0 +1,38 @@
+<h2 mat-dialog-title class="create-post-title">Create Post</h2>
+
+<mat-dialog-content class="create-post-dialog">
+  <form [formGroup]="formGroup">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="title"
+        (blur)="updateTitleErrorMessage()"
+        required
+      />
+      @if (title.invalid) {
+      <mat-error>{{ titleErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Content</mat-label>
+      <textarea
+        matInput
+        formControlName="content"
+        (blur)="updateContentErrorMessage()"
+        required
+      ></textarea>
+      @if (content.invalid) {
+      <mat-error>{{ contentErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button [disabled]="isLoading()" (click)="create()">
+    Create
+  </button>
+</mat-dialog-actions>

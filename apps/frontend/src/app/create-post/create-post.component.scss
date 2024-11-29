@@ -1,0 +1,14 @@
+.create-post-title {
+  margin-bottom: 0.8rem;
+}
+
+.create-post-dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+
+  mat-form-field {
+    padding: 0.4rem 0;
+    width: 100%;
+  }
+}

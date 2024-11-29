@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CurrentUserMiddleware } from './common/current-user.middleware';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
       inject: [ConfigService],
     }),
     AuthModule,
+    PostsModule,
+    ConfigModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CurrentUserMiddleware).forRoutes('*');
+  }
+}

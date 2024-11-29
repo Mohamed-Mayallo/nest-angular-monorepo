@@ -13,7 +13,6 @@ import {
 } from './auth-store.actions';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '@nest-angular-monorepo/types';
-import { getPosts } from '@nest-angular-monorepo/posts-store';
 import { Router } from '@angular/router';
 
 @Injectable()
@@ -53,7 +52,6 @@ export class AuthEffects {
           this.snackBar.open('Login Successful!', 'Close', {
             duration: 2000,
           });
-          getPosts();
           this.router.navigateByUrl('/posts');
         })
       ),

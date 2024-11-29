@@ -25,3 +25,14 @@ export const registerValidation = {
     nest: [],
   },
 };
+
+export const createPostValidation = {
+  title: {
+    angular: [Validators.required, Validators.minLength(1)],
+    nest: [],
+  },
+  content: {
+    angular: [Validators.required],
+    nest: [],
+  },
+};
