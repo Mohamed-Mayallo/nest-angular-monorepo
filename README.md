@@ -48,3 +48,4 @@ http://localhost:4200
 - Tracking authentication token expiration
 - Create post
 - Get posts for authenticated users
+- Forgot password
