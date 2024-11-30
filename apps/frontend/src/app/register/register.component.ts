@@ -85,9 +85,9 @@ export class RegisterComponent {
   register() {
     if (this.formGroup.invalid) return;
 
-    const name = this.formGroup.get('name')!.value as string;
-    const email = this.formGroup.get('email')!.value as string;
-    const password = this.formGroup.get('password')!.value as string;
+    const name = this.formGroup.get<string>('name')!.value;
+    const email = this.formGroup.get<string>('email')!.value;
+    const password = this.formGroup.get<string>('password')!.value;
 
     this.store.dispatch(register({ name, email, password }));
   }

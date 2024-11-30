@@ -2,6 +2,14 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { User } from '@nest-angular-monorepo/types';
+import { Router } from '@angular/router';
+import { EMPTY, Observable, of, timer } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectExpirationTime } from './auth-store.selectors';
+import { ForgetPasswordComponent } from '../../../../apps/frontend/src/app/forget-password/forget-password/forget-password.component';
+import { MatDialog } from '@angular/material/dialog';
 import {
   login,
   loginSuccess,
@@ -11,13 +19,13 @@ import {
   register,
   logout,
   trackTokenExpiration,
+  sendVerificationCodeFailure,
+  sendVerificationCodeSuccess,
+  sendVerificationCode,
+  forgetPassword,
+  forgetPasswordSuccess,
+  forgetPasswordFailure,
 } from './auth-store.actions';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { User } from '@nest-angular-monorepo/types';
-import { Router } from '@angular/router';
-import { EMPTY, Observable, of, timer } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { selectExpirationTime } from './auth-store.selectors';
 
 @Injectable()
 export class AuthEffects {
@@ -26,7 +34,8 @@ export class AuthEffects {
     private authService: AuthService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private dialog: MatDialog
   ) {}
 
   login$ = createEffect(
@@ -192,6 +201,113 @@ export class AuthEffects {
             }),
             catchError(() => of(logout()))
           );
+        })
+      ),
+    { dispatch: false, functional: true }
+  );
+
+  sendVerificationCode$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(sendVerificationCode),
+        switchMap((action) =>
+          this.authService.sendVerificationCode({ email: action.email }).pipe(
+            map(() => sendVerificationCodeSuccess({ email: action.email })),
+            catchError((error) =>
+              of(
+                sendVerificationCodeFailure({
+                  error: error.error?.message || error.message,
+                })
+              )
+            )
+          )
+        )
+      ),
+    { functional: true }
+  );
+
+  sendVerificationCodeSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(sendVerificationCodeSuccess),
+        map((action) => {
+          this.snackBar.open('Please Check Your Inbox!', 'Close', {
+            duration: 4000,
+          });
+
+          this.dialog.open(ForgetPasswordComponent, {
+            data: { email: action.email },
+          });
+        })
+      ),
+    { dispatch: false, functional: true }
+  );
+
+  sendVerificationCodeFailure$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(sendVerificationCodeFailure),
+        map((action) => {
+          this.snackBar.open(action.error, 'Close', { duration: 2000 });
+        })
+      ),
+    { dispatch: false, functional: true }
+  );
+
+  forgetPassword$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(forgetPassword),
+        switchMap((action) =>
+          this.authService
+            .forgetPassword({
+              email: action.email,
+              verificationCode: action.verificationCode,
+              newPassword: action.newPassword,
+            })
+            .pipe(
+              map((user: User) =>
+                forgetPasswordSuccess({ token: user.token as string, user })
+              ),
+              catchError((error) =>
+                of(
+                  forgetPasswordFailure({
+                    error: error.error?.message || error.message,
+                  })
+                )
+              )
+            )
+        )
+      ),
+    { functional: true }
+  );
+
+  forgetPasswordSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(forgetPasswordSuccess),
+        map((action) => {
+          this.snackBar.open('Your Password Recovered Successfully!', 'Close', {
+            duration: 2000,
+          });
+
+          localStorage.setItem('authToken', action.token);
+          localStorage.setItem('authUser', JSON.stringify(action.user));
+
+          this.store.dispatch(trackTokenExpiration({ token: action.token }));
+
+          this.router.navigateByUrl('/posts');
+        })
+      ),
+    { dispatch: false, functional: true }
+  );
+
+  forgetPasswordFailure$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(forgetPasswordFailure),
+        map((action) => {
+          this.snackBar.open(action.error, 'Close', { duration: 2000 });
         })
       ),
     { dispatch: false, functional: true }

@@ -13,3 +13,13 @@ export interface CreatePostDto {
   title: string;
   content: string;
 }
+
+export class SendVerificationCodeDto {
+  email: string;
+}
+
+export class ForgetPasswordDto {
+  newPassword: string;
+  verificationCode: string;
+  email: string;
+}

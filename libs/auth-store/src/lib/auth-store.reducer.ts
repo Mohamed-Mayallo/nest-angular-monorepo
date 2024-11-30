@@ -7,6 +7,12 @@ import {
   register,
   registerSuccess,
   registerFailure,
+  forgetPassword,
+  forgetPasswordSuccess,
+  forgetPasswordFailure,
+  sendVerificationCode,
+  sendVerificationCodeSuccess,
+  sendVerificationCodeFailure,
 } from './auth-store.actions';
 import { User } from '@nest-angular-monorepo/types';
 
@@ -66,5 +72,35 @@ export const authReducer = createReducer(
       user: null,
       isLoading: false,
     };
-  })
+  }),
+
+  on(sendVerificationCode, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+  on(sendVerificationCodeSuccess, (state) => ({
+    ...state,
+    error: null,
+    isLoading: false,
+  })),
+  on(sendVerificationCodeFailure, (state, { error }) => ({
+    ...state,
+    error,
+    isLoading: false,
+  })),
+
+  on(forgetPassword, (state) => ({ ...state, isLoading: true, error: null })),
+  on(forgetPasswordSuccess, (state, { token, user }) => ({
+    ...state,
+    token,
+    user,
+    error: null,
+    isLoading: false,
+  })),
+  on(forgetPasswordFailure, (state, { error }) => ({
+    ...state,
+    error,
+    isLoading: false,
+  }))
 );

@@ -68,8 +68,8 @@ export class LoginComponent implements OnInit {
   login() {
     if (this.formGroup.invalid) return;
 
-    const email = this.formGroup.get('email')!.value as string;
-    const password = this.formGroup.get('password')!.value as string;
+    const email = this.formGroup.get<string>('email')!.value;
+    const password = this.formGroup.get<string>('password')!.value;
 
     this.store.dispatch(login({ email, password }));
   }

@@ -1,6 +1,12 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Patch, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto, User } from '@nest-angular-monorepo/types';
+import {
+  ForgetPasswordDto,
+  LoginDto,
+  RegisterDto,
+  SendVerificationCodeDto,
+  User,
+} from '@nest-angular-monorepo/types';
 
 @Controller('auth')
 export class AuthController {
@@ -14,5 +20,17 @@ export class AuthController {
   @Post('/login')
   public login(@Body() body: LoginDto): Promise<User> {
     return this.authService.login(body);
+  }
+
+  @Post('/send-verification-code')
+  public sendVerificationCode(
+    @Body() body: SendVerificationCodeDto
+  ): Promise<void> {
+    return this.authService.sendVerificationCode(body);
+  }
+
+  @Patch('/forget-password')
+  public forgetPassword(@Body() body: ForgetPasswordDto): Promise<User> {
+    return this.authService.forgetPassword(body);
   }
 }

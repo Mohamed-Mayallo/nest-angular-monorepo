@@ -1,0 +1,37 @@
+<div class="send-verification-code-page">
+  <mat-card class="send-verification-code-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Send Verification Code</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Enter your email</mat-label>
+        <input
+          matInput
+          type="email"
+          [formControl]="email"
+          (blur)="updateEmailErrorMessage()"
+          required
+        />
+        @if (email.invalid) {
+        <mat-error>{{ emailErrorMessage() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        [disabled]="isLoading()"
+        (click)="sendVerificationCode()"
+      >
+        Send code
+      </button>
+    </mat-card-content>
+
+    <mat-card-footer class="send-verification-code-card-footer">
+      <a routerLink="/login"> Login </a>
+      <span>Or</span>
+      <a routerLink="/register"> Register </a>
+    </mat-card-footer>
+  </mat-card>
+</div>

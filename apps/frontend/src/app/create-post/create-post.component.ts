@@ -69,8 +69,8 @@ export class CreatePostComponent {
   create() {
     if (this.formGroup.invalid) return;
 
-    const title = this.formGroup.get('title')!.value as string;
-    const content = this.formGroup.get('content')!.value as string;
+    const title = this.formGroup.get<string>('title')!.value;
+    const content = this.formGroup.get<string>('content')!.value;
 
     this.store.dispatch(createPost({ title, content }));
 
