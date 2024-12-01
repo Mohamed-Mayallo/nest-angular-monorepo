@@ -47,7 +47,7 @@ exports.AppModule = AppModule = tslib_1.__decorate([
             }),
             auth_module_1.AuthModule,
             posts_module_1.PostsModule,
-            config_1.ConfigModule,
+            config_1.ConfigModule.forRoot({ envFilePath: `${process.cwd()}/../../../.env` }),
         ],
     })
 ], AppModule);

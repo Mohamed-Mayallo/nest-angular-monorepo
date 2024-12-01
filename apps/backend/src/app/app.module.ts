@@ -18,7 +18,7 @@ import { PostsModule } from './posts/posts.module';
     }),
     AuthModule,
     PostsModule,
-    ConfigModule,
+    ConfigModule.forRoot({ envFilePath: `${process.cwd()}/../../../.env` }),
   ],
 })
 export class AppModule {
