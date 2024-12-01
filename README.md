@@ -42,6 +42,8 @@ You can try the whole functionality remotely by hitting the following URL:
 http://34.71.100.200/login
 ```
 
+Note: To be able to try the forgot password functionality, please use `1234` as a verification code.
+
 ## Used tools
 
 - Nest.js (API)
