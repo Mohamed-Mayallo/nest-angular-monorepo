@@ -1,6 +1,8 @@
 # Nest-Angular Monorepo
 
-## 1. Configure your app
+## Install app locally
+
+### 1. Configure your app
 
 Create a new .env file in the `backend` repo and having the following values:
 
@@ -10,7 +12,7 @@ DB_URL = your - db - url;
 JWT_SECRET = secret;
 ```
 
-## 2. Run tasks
+### 2. Run tasks
 
 Run Frontend using:
 
@@ -24,12 +26,20 @@ Run Backend using:
 npx nx run backend:serve:development
 ```
 
-## 3. Try the functionality
+### 3. Try the functionality locally
 
 Open a new browser tab and hit the following link:
 
 ```
 http://localhost:4200
+```
+
+## Try the app remotely
+
+You can try the whole functionality remotely by hitting the following URL:
+
+```
+http://34.71.100.200/login
 ```
 
 ## Used tools
@@ -39,6 +49,7 @@ http://localhost:4200
 - Angular and Angular Material (UI)
 - Nx (Monorepo)
 - NGRX (Store)
+- GCP (VM)
 
 ## Implemented features
 
@@ -49,3 +60,4 @@ http://localhost:4200
 - Create post
 - Get posts for authenticated users
 - Forgot password
+- Deployment on GCP

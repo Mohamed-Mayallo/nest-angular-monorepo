@@ -13,7 +13,7 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  private _baseAuthUrl = 'http://localhost:3000/api/auth';
+  private _baseAuthUrl = 'http://34.71.100.200/api/auth';
 
   constructor(private http: HttpClient) {}
 

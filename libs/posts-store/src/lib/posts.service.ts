@@ -9,7 +9,7 @@ import { selectAuthenticatedUser } from '@nest-angular-monorepo/auth-store';
   providedIn: 'root',
 })
 export class PostsService {
-  private _baseAuthUrl = 'http://localhost:3000/api/posts';
+  private _baseAuthUrl = 'http://34.71.100.200/api/posts';
 
   constructor(private http: HttpClient, private store: Store) {}
 
