@@ -50,6 +50,7 @@ http://34.71.100.200/login
 - Nx (Monorepo)
 - NGRX (Store)
 - GCP (VM)
+- PM2 (Process Manager)
 
 ## Implemented features
 
